@@ -6,6 +6,7 @@ import type {
   ChatMessage,
   ClientMessage,
   RankEntry,
+  Reaction,
   RoomState,
   ScoreDelta,
   ServerMessage,
@@ -37,6 +38,12 @@ export type CanvasEvent =
   | { type: "clear" }
   | { type: "sync"; strokes: Stroke[] };
 
+/** An emoji reaction flung onto the canvas by any player. */
+export interface ReactionEvent {
+  emoji: Reaction;
+  name: string;
+}
+
 export interface GameApi {
   connected: boolean;
   youId: string | null;
@@ -46,7 +53,7 @@ export interface GameApi {
   word: string | null;
   /** Word choices, only set when you are the drawer during "choosing". */
   wordChoices: string[] | null;
-  turnEnd: { word: string; deltas: ScoreDelta[] } | null;
+  turnEnd: { word: string; deltas: ScoreDelta[]; strokes: Stroke[] } | null;
   ranking: RankEntry[] | null;
   error: string | null;
 
@@ -60,14 +67,17 @@ export interface GameApi {
   sendDraw: (strokes: Stroke[]) => void;
   clearCanvas: () => void;
   guess: (text: string) => void;
+  react: (emoji: Reaction) => void;
   playAgain: () => void;
 
   subscribeCanvas: (cb: (e: CanvasEvent) => void) => () => void;
+  subscribeReactions: (cb: (e: ReactionEvent) => void) => () => void;
 }
 
 export function usePartyGame(roomId: string, name: string | null): GameApi {
   const socketRef = useRef<PartySocket | null>(null);
   const canvasSubs = useRef<Set<(e: CanvasEvent) => void>>(new Set());
+  const reactionSubs = useRef<Set<(e: ReactionEvent) => void>>(new Set());
 
   const [connected, setConnected] = useState(false);
   const [youId, setYouId] = useState<string | null>(null);
@@ -75,12 +85,16 @@ export function usePartyGame(roomId: string, name: string | null): GameApi {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [word, setWord] = useState<string | null>(null);
   const [wordChoices, setWordChoices] = useState<string[] | null>(null);
-  const [turnEnd, setTurnEnd] = useState<{ word: string; deltas: ScoreDelta[] } | null>(null);
+  const [turnEnd, setTurnEnd] = useState<{ word: string; deltas: ScoreDelta[]; strokes: Stroke[] } | null>(null);
   const [ranking, setRanking] = useState<RankEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const emitCanvas = useCallback((e: CanvasEvent) => {
     canvasSubs.current.forEach((cb) => cb(e));
+  }, []);
+
+  const emitReaction = useCallback((e: ReactionEvent) => {
+    reactionSubs.current.forEach((cb) => cb(e));
   }, []);
 
   // Establish the WebSocket connection for this room.
@@ -137,8 +151,11 @@ export function usePartyGame(roomId: string, name: string | null): GameApi {
         case "canvasSync":
           emitCanvas({ type: "sync", strokes: msg.strokes });
           break;
+        case "reaction":
+          emitReaction({ emoji: msg.emoji, name: msg.name });
+          break;
         case "turnEnd":
-          setTurnEnd({ word: msg.word, deltas: msg.deltas });
+          setTurnEnd({ word: msg.word, deltas: msg.deltas, strokes: msg.strokes });
           break;
         case "gameEnd":
           setRanking(msg.ranking);
@@ -161,7 +178,7 @@ export function usePartyGame(roomId: string, name: string | null): GameApi {
       socket.close();
       socketRef.current = null;
     };
-  }, [roomId, name, emitCanvas]);
+  }, [roomId, name, emitCanvas, emitReaction]);
 
   const send = useCallback((msg: ClientMessage) => {
     socketRef.current?.send(JSON.stringify(msg));
@@ -171,6 +188,13 @@ export function usePartyGame(roomId: string, name: string | null): GameApi {
     canvasSubs.current.add(cb);
     return () => {
       canvasSubs.current.delete(cb);
+    };
+  }, []);
+
+  const subscribeReactions = useCallback((cb: (e: ReactionEvent) => void) => {
+    reactionSubs.current.add(cb);
+    return () => {
+      reactionSubs.current.delete(cb);
     };
   }, []);
 
@@ -203,7 +227,9 @@ export function usePartyGame(roomId: string, name: string | null): GameApi {
     sendDraw: (strokes) => send({ type: "draw", strokes }),
     clearCanvas: () => send({ type: "clear" }),
     guess: (text) => send({ type: "guess", text }),
+    react: (emoji) => send({ type: "react", emoji }),
     playAgain: () => send({ type: "playAgain" }),
     subscribeCanvas,
+    subscribeReactions,
   };
 }

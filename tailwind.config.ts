@@ -49,10 +49,18 @@ export default {
           "0%, 100%": { transform: "rotate(-2deg)" },
           "50%": { transform: "rotate(2deg)" },
         },
+        // A reaction emoji drifts up the canvas, wobbling, then fades.
+        floatUp: {
+          "0%": { transform: "translateY(0) scale(0.4)", opacity: "0" },
+          "15%": { transform: "translateY(-12%) scale(1.1)", opacity: "1" },
+          "75%": { opacity: "1" },
+          "100%": { transform: "translateY(-90%) scale(1)", opacity: "0" },
+        },
       },
       animation: {
         pop: "pop 0.22s ease-out",
         wiggle: "wiggle 0.4s ease-in-out",
+        "float-up": "floatUp 2.2s ease-out forwards",
       },
     },
   },

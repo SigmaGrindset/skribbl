@@ -11,6 +11,7 @@ import GameHeader from "./GameHeader";
 import WordSelect from "./WordSelect";
 import Lobby from "./Lobby";
 import { GameEndOverlay, TurnEndOverlay } from "./Overlays";
+import { ReactionBar, ReactionLayer } from "./Reactions";
 
 export default function GameRoom({ roomId, name }: { roomId: string; name: string }) {
   const game = usePartyGame(roomId, name);
@@ -92,11 +93,16 @@ export default function GameRoom({ roomId, name }: { roomId: string; name: strin
             subscribeCanvas={game.subscribeCanvas}
             sendDraw={game.sendDraw}
           />
+          <ReactionLayer subscribeReactions={game.subscribeReactions} />
           {game.isDrawer && phase === "choosing" && game.wordChoices && (
             <WordSelect words={game.wordChoices} onPick={game.chooseWord} />
           )}
           {phase === "turn-end" && game.turnEnd && (
-            <TurnEndOverlay word={game.turnEnd.word} deltas={game.turnEnd.deltas} />
+            <TurnEndOverlay
+              word={game.turnEnd.word}
+              deltas={game.turnEnd.deltas}
+              strokes={game.turnEnd.strokes}
+            />
           )}
           {phase === "game-end" && game.ranking && (
             <GameEndOverlay
@@ -116,6 +122,9 @@ export default function GameRoom({ roomId, name }: { roomId: string; name: strin
             onErase={setErase}
             onClear={handleClear}
           />
+        )}
+        {(phase === "drawing" || phase === "turn-end") && (
+          <ReactionBar onReact={game.react} />
         )}
       </div>
 

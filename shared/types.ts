@@ -4,7 +4,12 @@
 
 export type Phase = "lobby" | "choosing" | "drawing" | "turn-end" | "game-end";
 
-export type ChatKind = "user" | "system" | "correct" | "close";
+export type ChatKind = "user" | "system" | "correct" | "close" | "hot";
+
+/** Emoji the audience can fling onto the canvas. The set is fixed so the wire
+ *  stays tiny and the server can validate against it. */
+export const REACTIONS = ["😂", "👏", "😍", "🔥", "😱", "🤯"] as const;
+export type Reaction = (typeof REACTIONS)[number];
 
 export interface Player {
   id: string;
@@ -69,6 +74,7 @@ export type ClientMessage =
   | { type: "draw"; strokes: Stroke[] }
   | { type: "clear" }
   | { type: "guess"; text: string }
+  | { type: "react"; emoji: Reaction }
   | { type: "playAgain" };
 
 // ---------------------------------------------------------------------------
@@ -82,7 +88,8 @@ export type ServerMessage =
   | { type: "chat"; message: ChatMessage }
   | { type: "wordChoices"; words: string[] } // only sent to the drawer
   | { type: "yourWord"; word: string } // only sent to the drawer once chosen
-  | { type: "turnEnd"; word: string; deltas: ScoreDelta[] }
+  | { type: "reaction"; emoji: Reaction; name: string }
+  | { type: "turnEnd"; word: string; deltas: ScoreDelta[]; strokes: Stroke[] }
   | { type: "gameEnd"; ranking: RankEntry[] }
   | { type: "error"; message: string };
 

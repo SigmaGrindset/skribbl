@@ -68,6 +68,13 @@ function ChatLine({ m }: { m: ChatMessage }) {
       </p>
     );
   }
+  if (m.kind === "hot") {
+    return (
+      <p className="rounded-md border-2 border-ink bg-pop-orange/60 px-2 py-0.5 font-bold text-ink">
+        {m.text}
+      </p>
+    );
+  }
   if (m.kind === "close") {
     return (
       <p className="rounded-md border-2 border-ink bg-pop-yellow/50 px-2 py-0.5 font-bold text-ink">

@@ -1,10 +1,12 @@
 import type * as Party from "partykit/server";
 import {
   DEFAULTS,
+  REACTIONS,
   type ChatMessage,
   type ClientMessage,
   type Player,
   type RankEntry,
+  type Reaction,
   type RoomState,
   type ScoreDelta,
   type ServerMessage,
@@ -97,6 +99,7 @@ export default class SkribblServer implements Party.Server {
   private eligibleGuessers = 0;
   private turnDeltas = new Map<string, number>();
   private canvasStrokes: Stroke[] = [];
+  private lastReactAt = new Map<string, number>(); // pid -> epoch ms (spam guard)
 
   // --- scheduling ---
   // PartyKit runs on Cloudflare Workers (workerd), where `setTimeout` is NOT a
@@ -221,6 +224,8 @@ export default class SkribblServer implements Party.Server {
         return this.handleClear(sender);
       case "guess":
         return this.handleGuess(sender, msg.text);
+      case "react":
+        return this.handleReact(sender, msg.emoji);
       case "playAgain":
         return this.handlePlayAgain(sender);
     }
@@ -333,11 +338,18 @@ export default class SkribblServer implements Party.Server {
         this.registerCorrectGuess(player);
         return;
       }
-      // "Close" hint, privately to the guesser only.
-      if (editDistance(guess, answer) <= 1) {
+      // Hot/cold hint — private to the guesser only, so it never leaks the
+      // word to the room. Graded by edit distance to the answer.
+      const dist = editDistance(guess, answer);
+      if (dist === 1) {
         this.send(conn, {
           type: "chat",
-          message: chat("", `'${text}' is close!`, "close"),
+          message: chat("", `🔥 '${text}' je vruće — skoro!`, "hot"),
+        });
+      } else if (dist === 2) {
+        this.send(conn, {
+          type: "chat",
+          message: chat("", `🌤️ '${text}' je blizu`, "close"),
         });
       }
     }
@@ -350,6 +362,20 @@ export default class SkribblServer implements Party.Server {
     if (this.phase !== "game-end") return;
     if (this.pidOf(conn) !== this.hostId) return this.err(conn, "Only the host can restart.");
     this.resetToLobby("Back to lobby — start a new game!");
+  }
+
+  private handleReact(conn: Party.Connection, emoji: Reaction) {
+    const pid = this.pidOf(conn);
+    const player = pid ? this.players.get(pid) : undefined;
+    if (!pid || !player) return;
+    // Only a fixed set of emoji, and only while there's something to react to.
+    if (!REACTIONS.includes(emoji)) return;
+    if (this.phase !== "drawing" && this.phase !== "turn-end") return;
+    // Light per-player throttle so the canvas can't be flooded.
+    const now = Date.now();
+    if (now - (this.lastReactAt.get(pid) ?? 0) < 350) return;
+    this.lastReactAt.set(pid, now);
+    this.broadcast({ type: "reaction", emoji, name: player.name });
   }
 
   // =========================================================================
@@ -469,7 +495,8 @@ export default class SkribblServer implements Party.Server {
       deltas.push({ playerId: id, name: p?.name ?? "?", delta });
     }
 
-    this.broadcast({ type: "turnEnd", word: this.secretWord, deltas });
+    // Include the full stroke list so every client can replay the drawing.
+    this.broadcast({ type: "turnEnd", word: this.secretWord, deltas, strokes: this.canvasStrokes });
     this.broadcastChat(chat("", `The word was: ${this.secretWord}`, "system"));
     this.broadcastState();
 
