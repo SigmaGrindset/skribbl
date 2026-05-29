@@ -26,32 +26,31 @@ export default function Lobby({ state, isHost, roomId, onStart }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-6 rounded-2xl bg-slate-800/70 p-8 text-center ring-1 ring-white/10">
+    <div className="flex flex-col items-center gap-6 card-pop p-8 text-center">
       <div>
-        <p className="text-sm text-slate-400">Room code</p>
-        <p className="text-3xl font-black tracking-[0.3em] text-brand">{roomId.toUpperCase()}</p>
+        <p className="text-sm font-bold uppercase tracking-wide text-ink/50">Kod sobe</p>
+        <p className="-rotate-1 text-4xl font-bold tracking-[0.3em] text-pop-purple">
+          {roomId.toUpperCase()}
+        </p>
       </div>
 
-      <button
-        onClick={copyLink}
-        className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium transition hover:bg-slate-600"
-      >
-        {copied ? "Link copied ✓" : "Copy invite link"}
+      <button onClick={copyLink} className="btn-pop bg-pop-cyan px-4 py-2 text-sm">
+        {copied ? "Link kopiran ✓" : "📋 Kopiraj pozivni link"}
       </button>
 
       {isHost ? (
         <div className="w-full max-w-sm space-y-4">
-          <Setting label={`Rounds: ${rounds}`}>
+          <Setting label={`Runde: ${rounds}`}>
             <input
               type="range"
               min={1}
               max={6}
               value={rounds}
               onChange={(e) => setRounds(Number(e.target.value))}
-              className="w-full accent-brand"
+              className="w-full accent-pop-purple"
             />
           </Setting>
-          <Setting label={`Draw time: ${drawTime}s`}>
+          <Setting label={`Vrijeme crtanja: ${drawTime}s`}>
             <input
               type="range"
               min={30}
@@ -59,19 +58,19 @@ export default function Lobby({ state, isHost, roomId, onStart }: Props) {
               step={10}
               value={drawTime}
               onChange={(e) => setDrawTime(Number(e.target.value))}
-              className="w-full accent-brand"
+              className="w-full accent-pop-purple"
             />
           </Setting>
           <button
             onClick={() => onStart(rounds, drawTime)}
             disabled={!enough}
-            className="w-full rounded-lg bg-brand px-4 py-3 text-lg font-bold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-pop w-full bg-pop-green px-4 py-3 text-lg"
           >
-            {enough ? "Start game" : `Need ${DEFAULTS.minPlayers}+ players`}
+            {enough ? "▶ Pokreni igru" : `Treba ${DEFAULTS.minPlayers}+ igrača`}
           </button>
         </div>
       ) : (
-        <p className="text-slate-400">Waiting for the host to start the game…</p>
+        <p className="font-semibold text-ink/60">Čekamo da domaćin pokrene igru…</p>
       )}
     </div>
   );
@@ -80,7 +79,7 @@ export default function Lobby({ state, isHost, roomId, onStart }: Props) {
 function Setting({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block text-left">
-      <span className="mb-1 block text-sm font-medium text-slate-300">{label}</span>
+      <span className="mb-1 block text-sm font-bold text-ink">{label}</span>
       {children}
     </label>
   );

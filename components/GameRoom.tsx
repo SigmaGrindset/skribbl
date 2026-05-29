@@ -24,8 +24,10 @@ export default function GameRoom({ roomId, name }: { roomId: string; name: strin
 
   if (!state || !game.connected) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-slate-400">
-        {game.connected ? "Loading room…" : "Connecting…"}
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="card-pop animate-wiggle px-6 py-4 text-lg font-bold">
+          {game.connected ? "Učitavam sobu…" : "Spajam se…"}
+        </div>
       </div>
     );
   }
@@ -61,10 +63,15 @@ export default function GameRoom({ roomId, name }: { roomId: string; name: strin
   return (
     <main className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-3 p-3 lg:grid-cols-[220px_1fr_300px]">
       <header className="lg:col-span-3 flex items-center justify-between">
-        <Link href="/" className="text-lg font-black">
-          <span className="text-brand">Sigma</span>Skribbl
+        <Link
+          href="/"
+          className="-rotate-2 rounded-xl border-[3px] border-ink bg-pop-yellow px-3 py-1 text-lg font-bold shadow-pop-sm transition-transform hover:rotate-0"
+        >
+          Sigma<span className="text-pop-purple">Skribbl</span>
         </Link>
-        <span className="text-xs text-slate-500">Room {roomId.toUpperCase()}</span>
+        <span className="rounded-lg border-2 border-ink bg-white px-3 py-1 text-xs font-bold tracking-widest">
+          SOBA {roomId.toUpperCase()}
+        </span>
       </header>
 
       {/* Left: players */}
@@ -130,7 +137,7 @@ export default function GameRoom({ roomId, name }: { roomId: string; name: strin
 function Toast({ error }: { error: string | null }) {
   if (!error) return null;
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-lg">
+    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 animate-pop rounded-xl border-[3px] border-ink bg-pop-red px-4 py-2 text-sm font-bold text-white shadow-pop">
       {error}
     </div>
   );

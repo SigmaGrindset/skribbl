@@ -168,7 +168,7 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-xl bg-white shadow-inner ring-1 ring-black/10">
+    <div className="relative w-full overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-pop">
       <canvas
         ref={canvasRef}
         className={`block aspect-[3/2] w-full no-touch-action ${canDraw ? "cursor-crosshair" : "cursor-not-allowed"}`}

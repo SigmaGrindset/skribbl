@@ -30,7 +30,16 @@
       "PowerShell(vercel whoami *)",
       "PowerShell(vercel link *)",
       "PowerShell(vercel *)",
-      "PowerShell(npm i *)"
+      "PowerShell(npm i *)",
+      "Bash(pkill -f \"next\")",
+      "Bash(taskkill //IM node.exe //F)",
+      "Bash(BASE_URL=http://localhost:3000 node e2e.mjs)",
+      "PowerShell($url = \"https://skribbl-f9mbzqd4q-sigmagrindsets-projects.vercel.app\"; try { $r = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 20; \"HTTP $\\($r.StatusCode\\) - length $\\($r.Content.Length\\)\" } catch { \"ERR: $\\($_.Exception.Message\\)\" }; \"--- production alias ---\"; vercel inspect $url 2>&1 | Select-String -Pattern \"Aliases|vercel.app\" | Select-Object -First 5)",
+      "PowerShell($url = \"https://skribbl-ebon.vercel.app\"; try { $r = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 20; \"HTTP $\\($r.StatusCode\\) - length $\\($r.Content.Length\\)\" } catch { \"ERR: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(git status; \"=== branch ===\"; git branch --show-current)",
+      "PowerShell(npm run *)",
+      "PowerShell(git diff --stat; \"=== untracked ===\"; git status --porcelain | Where-Object { $_ -match '^\\\\?\\\\?' })",
+      "PowerShell(git *)"
     ]
   }
 }

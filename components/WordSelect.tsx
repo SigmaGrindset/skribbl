@@ -6,21 +6,26 @@ interface Props {
 }
 
 export default function WordSelect({ words, onPick }: Props) {
+  const colors = ["bg-pop-green", "bg-pop-cyan", "bg-pop-pink", "bg-pop-orange"];
   return (
-    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 rounded-xl bg-slate-900/85 backdrop-blur">
-      <p className="text-lg font-semibold text-slate-200">Pick a word to draw</p>
+    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-5 rounded-xl bg-ink/30 backdrop-blur-sm">
+      <p className="-rotate-1 rounded-xl border-[3px] border-ink bg-pop-yellow px-4 py-2 text-lg font-bold text-ink shadow-pop">
+        ✏️ Odaberi riječ za crtanje
+      </p>
       <div className="flex flex-wrap justify-center gap-3 px-4">
-        {words.map((w) => (
+        {words.map((w, i) => (
           <button
             key={w}
             onClick={() => onPick(w)}
-            className="rounded-xl bg-brand px-5 py-3 text-lg font-bold text-white shadow-lg transition hover:scale-105 hover:bg-brand-dark"
+            className={`btn-pop px-5 py-3 text-lg ${colors[i % colors.length]}`}
           >
             {w}
           </button>
         ))}
       </div>
-      <p className="text-xs text-slate-500">Auto-picks the first word if you wait too long.</p>
+      <p className="rounded-lg border-2 border-ink bg-white px-3 py-1 text-xs font-semibold text-ink/60">
+        Ako predugo čekaš, automatski bira prvu riječ.
+      </p>
     </div>
   );
 }

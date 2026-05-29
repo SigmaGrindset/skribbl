@@ -23,34 +23,39 @@ export default function RoomPage() {
 
   if (!name) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 px-6">
-        <h1 className="text-2xl font-bold">
-          Join room <span className="text-brand">{roomId.toUpperCase()}</span>
+      <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-5 px-6">
+        <h1 className="text-center text-2xl font-bold">
+          Pridruži se sobi{" "}
+          <span className="inline-block -rotate-2 rounded-lg border-[3px] border-ink bg-pop-yellow px-2 py-0.5 text-pop-purple shadow-pop-sm">
+            {roomId.toUpperCase()}
+          </span>
         </h1>
-        <input
-          autoFocus
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && draft.trim()) {
+        <div className="card-pop space-y-4 p-6">
+          <input
+            autoFocus
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && draft.trim()) {
+                sessionStorage.setItem("skribbl:name", draft.trim());
+                setName(draft.trim());
+              }
+            }}
+            maxLength={20}
+            placeholder="Tvoj nadimak"
+            className="input-pop w-full"
+          />
+          <button
+            onClick={() => {
+              if (!draft.trim()) return;
               sessionStorage.setItem("skribbl:name", draft.trim());
               setName(draft.trim());
-            }
-          }}
-          maxLength={20}
-          placeholder="Your nickname"
-          className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 outline-none focus:border-brand"
-        />
-        <button
-          onClick={() => {
-            if (!draft.trim()) return;
-            sessionStorage.setItem("skribbl:name", draft.trim());
-            setName(draft.trim());
-          }}
-          className="rounded-lg bg-brand px-4 py-2.5 font-semibold text-white transition hover:bg-brand-dark"
-        >
-          Join
-        </button>
+            }}
+            className="btn-pop w-full bg-pop-green px-4 py-2.5"
+          >
+            🚪 Uđi
+          </button>
+        </div>
       </main>
     );
   }

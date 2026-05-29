@@ -105,17 +105,19 @@ export function usePartyGame(roomId: string, name: string | null): GameApi {
         return;
       }
       switch (msg.type) {
-        case "state":
+        case "state": {
           setState(msg.state);
-          // Leaving the drawing phase clears any locally held secret word.
-          if (msg.state.phase === "choosing") {
-            setWord(null);
-            setWordChoices(null);
-          }
-          if (msg.state.phase === "drawing") setTurnEnd(null);
-          if (msg.state.phase !== "game-end") setRanking(null);
-          if (msg.state.phase === "lobby") setTurnEnd(null);
+          // Clear transient drawer-only / overlay data based on the *current*
+          // phase. IMPORTANT: only clear when we are NOT in that phase — the
+          // server sends `wordChoices`/`yourWord`/`turnEnd` just before the
+          // matching `state`, so clearing on-enter would wipe fresh data.
+          const ph = msg.state.phase;
+          if (ph !== "choosing") setWordChoices(null);
+          if (ph !== "drawing") setWord(null);
+          if (ph !== "turn-end") setTurnEnd(null);
+          if (ph !== "game-end") setRanking(null);
           break;
+        }
         case "chat":
           setMessages((m) => [...m.slice(-199), msg.message]);
           break;

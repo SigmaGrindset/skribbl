@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { Fredoka } from "next/font/google";
 import "./globals.css";
+
+// Fredoka: rounded, chunky, friendly — reads instantly as a playful game font.
+const display = Fredoka({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
+});
 
 export const metadata: Metadata = {
   title: "SigmaSkribbl — draw & guess",
@@ -12,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen">{children}</body>
+    <html lang="en" className={display.variable}>
+      <body className="min-h-screen font-body">{children}</body>
     </html>
   );
 }

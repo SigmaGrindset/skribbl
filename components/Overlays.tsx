@@ -12,16 +12,21 @@ export function TurnEndOverlay({
   const scored = [...deltas].sort((a, b) => b.delta - a.delta);
   return (
     <Backdrop>
-      <p className="text-sm uppercase tracking-widest text-slate-400">The word was</p>
-      <p className="mb-4 text-3xl font-black text-white">{word}</p>
+      <p className="text-sm font-bold uppercase tracking-widest text-ink/50">Riječ je bila</p>
+      <p className="mb-4 -rotate-1 rounded-xl border-[3px] border-ink bg-pop-yellow px-5 py-2 text-3xl font-bold text-ink shadow-pop">
+        {word}
+      </p>
       {scored.length === 0 ? (
-        <p className="text-slate-400">Nobody guessed it 😬</p>
+        <p className="font-bold text-ink/60">Nitko nije pogodio 😬</p>
       ) : (
-        <ul className="w-64 space-y-1">
+        <ul className="w-64 space-y-1.5">
           {scored.map((d) => (
-            <li key={d.playerId} className="flex justify-between text-slate-200">
+            <li
+              key={d.playerId}
+              className="flex justify-between rounded-lg border-2 border-ink bg-white px-3 py-1.5 font-bold text-ink"
+            >
               <span className="truncate">{d.name}</span>
-              <span className="font-semibold text-emerald-400">+{d.delta}</span>
+              <span className="text-pop-green">+{d.delta}</span>
             </li>
           ))}
         </ul>
@@ -42,32 +47,31 @@ export function GameEndOverlay({
   const medals = ["🥇", "🥈", "🥉"];
   return (
     <Backdrop>
-      <p className="mb-1 text-sm uppercase tracking-widest text-slate-400">Final scores</p>
-      <p className="mb-4 text-3xl font-black text-white">Game over!</p>
-      <ul className="mb-6 w-72 space-y-1.5">
+      <p className="mb-1 text-sm font-bold uppercase tracking-widest text-ink/50">Konačni rezultat</p>
+      <p className="mb-4 -rotate-2 rounded-xl border-[3px] border-ink bg-pop-pink px-5 py-2 text-3xl font-bold text-white shadow-pop">
+        Kraj igre! 🎉
+      </p>
+      <ul className="mb-6 w-72 space-y-2">
         {ranking.map((r, i) => (
           <li
             key={r.playerId}
-            className={`flex items-center justify-between rounded-lg px-3 py-2 ${
-              i === 0 ? "bg-amber-500/20" : "bg-white/5"
+            className={`flex items-center justify-between rounded-lg border-2 border-ink px-3 py-2 font-bold text-ink ${
+              i === 0 ? "bg-pop-yellow shadow-pop-sm" : "bg-white"
             }`}
           >
             <span className="truncate">
               {medals[i] ?? `${i + 1}.`} {r.name}
             </span>
-            <span className="font-semibold tabular-nums text-slate-200">{r.score}</span>
+            <span className="tabular-nums">{r.score}</span>
           </li>
         ))}
       </ul>
       {isHost ? (
-        <button
-          onClick={onPlayAgain}
-          className="rounded-lg bg-brand px-6 py-2.5 font-semibold text-white transition hover:bg-brand-dark"
-        >
-          Play again
+        <button onClick={onPlayAgain} className="btn-pop bg-pop-green px-6 py-2.5 text-lg">
+          🔄 Igraj ponovno
         </button>
       ) : (
-        <p className="text-sm text-slate-400">Waiting for the host to restart…</p>
+        <p className="font-semibold text-ink/60">Čekamo da domaćin ponovno pokrene…</p>
       )}
     </Backdrop>
   );
@@ -75,7 +79,7 @@ export function GameEndOverlay({
 
 function Backdrop({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-xl bg-slate-900/90 p-6 text-center backdrop-blur animate-pop">
+    <div className="absolute inset-0 z-30 flex animate-pop flex-col items-center justify-center rounded-xl bg-ink/30 p-6 text-center backdrop-blur-sm">
       {children}
     </div>
   );

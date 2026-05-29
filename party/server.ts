@@ -98,10 +98,11 @@ export default class SkribblServer implements Party.Server {
   private turnDeltas = new Map<string, number>();
   private canvasStrokes: Stroke[] = [];
 
-  // --- timers ---
-  private chooseTimer: ReturnType<typeof setTimeout> | null = null;
-  private turnTimer: ReturnType<typeof setTimeout> | null = null;
-  private turnEndTimer: ReturnType<typeof setTimeout> | null = null;
+  // --- scheduling ---
+  // PartyKit runs on Cloudflare Workers (workerd), where `setTimeout` is NOT a
+  // reliable wall-clock timer. We use the Durable Object Alarms API instead.
+  // Only one alarm can be pending at a time, so we record what it's for.
+  private pendingAction: "autopick" | "turnEnd" | "nextTurn" | null = null;
 
   // =========================================================================
   // Connection lifecycle
@@ -110,6 +111,36 @@ export default class SkribblServer implements Party.Server {
   onConnect(conn: Party.Connection) {
     // The player record is created once they send `join` (which carries the pid).
     this.send(conn, { type: "state", state: this.snapshot() });
+  }
+
+  /** Durable Object alarm — our reliable wall-clock scheduler. */
+  onAlarm() {
+    const action = this.pendingAction;
+    this.pendingAction = null;
+    switch (action) {
+      case "autopick":
+        if (this.phase === "choosing" && this.wordChoices.length) {
+          this.startDrawing(this.wordChoices[0]);
+        }
+        break;
+      case "turnEnd":
+        if (this.phase === "drawing") this.endTurn();
+        break;
+      case "nextTurn":
+        if (this.phase === "turn-end") this.beginNextTurn();
+        break;
+    }
+  }
+
+  /** Schedule a single future transition (replaces any pending one). */
+  private schedule(action: "autopick" | "turnEnd" | "nextTurn", delayMs: number) {
+    this.pendingAction = action;
+    void this.room.storage.setAlarm(Date.now() + delayMs);
+  }
+
+  private clearTimers() {
+    this.pendingAction = null;
+    void this.room.storage.deleteAlarm();
   }
 
   onClose(conn: Party.Connection) {
@@ -368,12 +399,8 @@ export default class SkribblServer implements Party.Server {
     this.sendToId(drawerId, { type: "wordChoices", words: this.wordChoices });
     this.broadcastState();
 
-    // Auto-pick if the drawer dawdles.
-    this.chooseTimer = setTimeout(() => {
-      if (this.phase === "choosing" && this.currentDrawerId === drawerId) {
-        this.startDrawing(this.wordChoices[0]);
-      }
-    }, DEFAULTS.chooseTimeSec * 1000);
+    // Auto-pick the first word if the drawer dawdles.
+    this.schedule("autopick", DEFAULTS.chooseTimeSec * 1000);
   }
 
   private startDrawing(word: string) {
@@ -393,9 +420,7 @@ export default class SkribblServer implements Party.Server {
     this.broadcastChat(chat("", `${drawer?.name ?? "Someone"} is drawing!`, "system"));
     this.broadcastState();
 
-    this.turnTimer = setTimeout(() => {
-      if (this.phase === "drawing") this.endTurn();
-    }, this.drawTimeSec * 1000);
+    this.schedule("turnEnd", this.drawTimeSec * 1000);
   }
 
   private registerCorrectGuess(player: Player) {
@@ -448,9 +473,7 @@ export default class SkribblServer implements Party.Server {
     this.broadcastChat(chat("", `The word was: ${this.secretWord}`, "system"));
     this.broadcastState();
 
-    this.turnEndTimer = setTimeout(() => {
-      this.beginNextTurn();
-    }, DEFAULTS.turnEndPauseSec * 1000);
+    this.schedule("nextTurn", DEFAULTS.turnEndPauseSec * 1000);
   }
 
   private endGame() {
@@ -500,13 +523,6 @@ export default class SkribblServer implements Party.Server {
 
   private connectedCount(): number {
     return this.players.size;
-  }
-
-  private clearTimers() {
-    if (this.chooseTimer) clearTimeout(this.chooseTimer);
-    if (this.turnTimer) clearTimeout(this.turnTimer);
-    if (this.turnEndTimer) clearTimeout(this.turnEndTimer);
-    this.chooseTimer = this.turnTimer = this.turnEndTimer = null;
   }
 
   private snapshot(): RoomState {

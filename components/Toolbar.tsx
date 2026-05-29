@@ -28,7 +28,7 @@ export default function Toolbar({
   onClear,
 }: Props) {
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl bg-slate-800/70 p-3 ring-1 ring-white/10">
+    <div className="flex flex-wrap items-center gap-3 card-pop p-3">
       <div className="flex flex-wrap gap-1.5">
         {PALETTE.map((c) => (
           <button
@@ -37,9 +37,9 @@ export default function Toolbar({
               onColor(c);
               onErase(false);
             }}
-            aria-label={`color ${c}`}
-            className={`h-6 w-6 rounded ring-2 transition ${
-              color === c && !erase ? "ring-white" : "ring-black/20"
+            aria-label={`boja ${c}`}
+            className={`h-7 w-7 rounded-md border-2 border-ink transition-transform hover:-translate-y-0.5 ${
+              color === c && !erase ? "ring-2 ring-ink ring-offset-1" : ""
             }`}
             style={{ backgroundColor: c }}
           />
@@ -51,13 +51,13 @@ export default function Toolbar({
           <button
             key={s}
             onClick={() => onSize(s)}
-            aria-label={`brush ${s}`}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 ring-1 transition ${
-              size === s ? "ring-brand" : "ring-slate-700"
+            aria-label={`kist ${s}`}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg border-2 border-ink bg-white transition ${
+              size === s ? "bg-pop-yellow" : "hover:bg-paper"
             }`}
           >
             <span
-              className="rounded-full bg-slate-200"
+              className="rounded-full bg-ink"
               style={{ width: s / 1.4, height: s / 1.4 }}
             />
           </button>
@@ -66,18 +66,13 @@ export default function Toolbar({
 
       <button
         onClick={() => onErase(!erase)}
-        className={`rounded-lg px-3 py-1.5 text-sm font-medium ring-1 transition ${
-          erase ? "bg-brand text-white ring-brand" : "bg-slate-900 ring-slate-700 hover:bg-slate-700"
-        }`}
+        className={`btn-pop px-3 py-1.5 text-sm ${erase ? "bg-pop-purple text-white" : "bg-white"}`}
       >
-        Eraser
+        🧽 Gumica
       </button>
 
-      <button
-        onClick={onClear}
-        className="ml-auto rounded-lg bg-rose-600/90 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-rose-600"
-      >
-        Clear
+      <button onClick={onClear} className="btn-pop ml-auto bg-pop-red px-3 py-1.5 text-sm text-white">
+        🗑️ Očisti
       </button>
     </div>
   );

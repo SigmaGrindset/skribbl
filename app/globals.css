@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -12,26 +12,48 @@ body {
 }
 
 body {
-  @apply bg-slate-900 text-slate-100 antialiased;
-  background-image: radial-gradient(
-      circle at 15% 15%,
-      rgba(109, 40, 217, 0.18),
-      transparent 40%
-    ),
-    radial-gradient(circle at 85% 20%, rgba(14, 165, 233, 0.16), transparent 42%);
+  @apply bg-paper text-ink antialiased;
+  /* Comic halftone-ish dot grid on warm paper. */
+  background-image: radial-gradient(rgba(22, 17, 13, 0.08) 1.6px, transparent 1.6px);
+  background-size: 22px 22px;
   background-attachment: fixed;
+}
+
+@layer components {
+  /* A bordered "sticker" panel with a hard offset shadow. */
+  .card-pop {
+    @apply rounded-2xl border-[3px] border-ink bg-white shadow-pop;
+  }
+
+  /* Chunky cartoon button: hard border + shadow, presses down on click. */
+  .btn-pop {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border-[3px]
+      border-ink font-extrabold text-ink shadow-pop transition-transform
+      duration-75 hover:-translate-x-[1px] hover:-translate-y-[1px]
+      hover:shadow-pop-lg active:translate-x-[2px] active:translate-y-[2px]
+      active:shadow-none disabled:cursor-not-allowed disabled:opacity-50
+      disabled:hover:translate-x-0 disabled:hover:translate-y-0
+      disabled:hover:shadow-pop;
+  }
+
+  /* Bordered input that matches the sticker aesthetic. */
+  .input-pop {
+    @apply rounded-xl border-[3px] border-ink bg-white px-3 py-2 font-bold
+      text-ink outline-none placeholder:font-medium placeholder:text-ink/40
+      focus:shadow-pop-sm disabled:opacity-50;
+  }
 }
 
 /* Thin scrollbars for chat / lists */
 .scroll-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  scrollbar-color: rgba(22, 17, 13, 0.35) transparent;
 }
 .scroll-thin::-webkit-scrollbar {
   width: 8px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.4);
+  background-color: rgba(22, 17, 13, 0.35);
   border-radius: 9999px;
 }
 
