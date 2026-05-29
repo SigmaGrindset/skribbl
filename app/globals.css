@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-900 text-slate-100 antialiased;
+  background-image: radial-gradient(
+      circle at 15% 15%,
+      rgba(109, 40, 217, 0.18),
+      transparent 40%
+    ),
+    radial-gradient(circle at 85% 20%, rgba(14, 165, 233, 0.16), transparent 42%);
+  background-attachment: fixed;
+}
+
+/* Thin scrollbars for chat / lists */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+/* Drawing canvas should never show a text cursor or selection */
+.no-touch-action {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

@@ -3,7 +3,34 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git remote *)",
-      "Bash(npm --version)"
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx next *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx partykit *)",
+      "Bash(echo \"started pid $!\")",
+      "Bash(node smoke.mjs)",
+      "Bash(rm -f smoke.mjs partykit.log)",
+      "Bash(pkill -f \"partykit dev\")",
+      "Bash(npm view *)",
+      "Bash(npm audit *)",
+      "Bash(git add *)",
+      "Bash(npm run *)",
+      "Bash(echo \"pokrenuto, pid $!\")",
+      "Bash(pkill -f partykit)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f concurrently)",
+      "Bash(taskkill //PID 22812 //F)",
+      "Bash(curl -s -o /dev/null -w \"Next app \\(3001\\): HTTP %{http_code}\\\\n\" http://localhost:3001)",
+      "Bash(curl -s -o /dev/null -w \"PartyKit \\(1999\\): HTTP %{http_code}\\\\n\" http://127.0.0.1:1999/parties/main/test)",
+      "Bash(npx playwright *)",
+      "Bash(node e2e.mjs)",
+      "PowerShell(Get-Command *)",
+      "PowerShell(vercel whoami *)",
+      "PowerShell(vercel link *)",
+      "PowerShell(vercel *)",
+      "PowerShell(npm i *)"
     ]
   }
 }

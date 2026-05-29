@@ -33,6 +33,15 @@ out/
 .turbo/
 .svelte-kit/
 
+# Next.js generated types
+next-env.d.ts
+
+# PartyKit
+.partykit/
+
+# Vercel
+.vercel
+
 # Testing / coverage
 coverage/
 .nyc_output/
@@ -58,3 +67,5 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+.vercel

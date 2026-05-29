@@ -1,0 +1,33 @@
+{
+  "name": "sigmaskribbl",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Room-wide skribbl-style draw-and-guess game (Next.js on Vercel + PartyKit realtime)",
+  "scripts": {
+    "dev": "concurrently -n next,party -c blue,magenta \"next dev\" \"partykit dev --port 1999\"",
+    "dev:next": "next dev",
+    "dev:party": "partykit dev --port 1999",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy:party": "partykit deploy"
+  },
+  "dependencies": {
+    "next": "15.5.18",
+    "partysocket": "1.0.2",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "22.10.7",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
+    "autoprefixer": "10.4.20",
+    "concurrently": "9.1.2",
+    "partykit": "0.0.114",
+    "postcss": "8.5.1",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.3"
+  }
+}
